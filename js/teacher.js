@@ -1,19 +1,27 @@
 // ===== 교사 대시보드 로직 =====
 
-const TEACHER_PW = 'teacher1234'; // 기본 비밀번호 (변경 가능)
+// 비밀번호는 SHA-256 해시로 저장 (평문 노출 방지)
+const TEACHER_PW_HASH = 'dfff8b45f566ab42bcda647140c53ada2ea8614e689ef51f77c23a68f77afad3';
+
+async function hashPassword(pw) {
+  const encoded = new TextEncoder().encode(pw);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 let currentView = { grade: '1', classNum: '1' };
-let editingGroups = null; // 현재 편집 중인 모둠 배열
+let editingGroups = null;
 
 // ===== 로그인 =====
 function initTeacherLogin() {
   const form = document.getElementById('login-form');
   if (!form) return;
 
-  form.addEventListener('submit', function(e) {
+  form.addEventListener('submit', async function(e) {
     e.preventDefault();
     const pw = document.getElementById('teacher-pw').value;
-    if (pw === TEACHER_PW) {
+    const hashed = await hashPassword(pw);
+    if (hashed === TEACHER_PW_HASH) {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('dashboard').classList.remove('hidden');
       initDashboard();
