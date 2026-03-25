@@ -150,14 +150,33 @@ function confirmDeleteStudent(grade, classNum, number, name) {
 function renderGroupsTab() {
   const students = getStudents(currentView.grade, currentView.classNum);
   const existingGroups = getGroups(currentView.grade, currentView.classNum);
+  const TARGET = 20; // 목표 인원
+  const MIN = 4;     // 최소 구성 인원
 
+  // 진행 바 업데이트
   const countEl = document.getElementById('group-student-count');
-  if (countEl) countEl.textContent = `현재 ${students.length}명 설문 완료`;
+  if (countEl) countEl.textContent = `현재 ${students.length}명 설문 완료 (목표: ${TARGET}명)`;
 
-  const generateBtn = document.getElementById('btn-generate');
-  if (generateBtn) {
-    generateBtn.disabled = students.length < 4;
+  const fillEl = document.getElementById('survey-progress-fill');
+  if (fillEl) fillEl.style.width = Math.min(100, Math.round(students.length / TARGET * 100)) + '%';
+
+  const neededEl = document.getElementById('group-student-needed');
+  if (neededEl) {
+    if (students.length >= TARGET) {
+      neededEl.textContent = '✅ 목표 인원 달성';
+      neededEl.style.color = '#10b981';
+    } else {
+      neededEl.textContent = `${TARGET - students.length}명 더 필요`;
+      neededEl.style.color = '#f59e0b';
+    }
   }
+
+  // 버튼 활성화 여부 + 힌트 메시지
+  const generateBtn = document.getElementById('btn-generate');
+  const hintEl = document.getElementById('btn-generate-hint');
+  const canGenerate = students.length >= MIN;
+  if (generateBtn) generateBtn.disabled = !canGenerate;
+  if (hintEl) hintEl.style.display = canGenerate ? 'none' : 'block';
 
   if (existingGroups) {
     editingGroups = existingGroups;
