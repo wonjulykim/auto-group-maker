@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학생 설문 - 자동 모둠 구성</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <h1>✏️ 학생 설문</h1>
+        <a href="index.html" class="btn btn-ghost btn-sm" style="color:white;border-color:rgba(255,255,255,.3)">← 홈으로</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== 학생 정보 입력 ===== -->
+  <section id="info-section">
+    <div class="container-sm" style="padding-top:40px;padding-bottom:60px">
+      <div class="card">
+        <div class="card-header">
+          <h2>📝 학생 정보 입력</h2>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info" style="margin-bottom:24px">
+            <span>ℹ️</span>
+            설문에 앞서 본인의 정보를 정확히 입력해 주세요.
+            입력된 정보는 모둠 구성에 활용되며 담당 선생님만 확인합니다.
+          </div>
+
+          <form id="info-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">학년 <span class="required">*</span></label>
+                <select id="grade" class="form-control" required>
+                  <option value="">선택</option>
+                  <option value="1">1학년</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">반 <span class="required">*</span></label>
+                <select id="classNum" class="form-control" required>
+                  <option value="">선택</option>
+                  <option value="1">1반</option>
+                  <option value="2">2반</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">번호 <span class="required">*</span></label>
+                <input type="number" id="number" class="form-control" placeholder="예: 15" min="1" max="30" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">성별 <span class="required">*</span></label>
+                <select id="gender" class="form-control" required>
+                  <option value="">선택</option>
+                  <option value="M">남</option>
+                  <option value="F">여</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">이름 <span class="required">*</span></label>
+              <input type="text" id="name" class="form-control" placeholder="본인 이름을 입력하세요" maxlength="10" required>
+            </div>
+
+            <div style="margin-top:8px">
+              <button type="submit" class="btn btn-primary btn-lg btn-block">
+                설문 시작하기 →
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 설문 섹션 ===== -->
+  <section id="survey-section" class="hidden">
+    <div class="survey-header">
+      <div class="container">
+        <div class="student-info-bar" id="student-info-display"></div>
+      </div>
+    </div>
+
+    <div class="container" style="padding-bottom:60px">
+      <!-- 진행 바 -->
+      <div class="progress-bar-wrap">
+        <div class="progress-info">
+          <span style="color:#4f46e5;font-size:.9rem">📊 설문 진행률</span>
+          <span id="progress-info" style="color:#64748b">0 / 30 문항 완료 (0%)</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="alert alert-warning" style="margin-bottom:24px">
+        <span>📌</span>
+        <div>
+          <strong>설문 안내</strong><br>
+          각 문항을 읽고 본인에게 해당하는 정도를 <strong>1점(전혀 그렇지 않다)</strong>부터 <strong>5점(매우 그렇다)</strong>까지
+          솔직하게 선택해 주세요. 모든 문항에 응답해야 제출이 가능합니다.
+        </div>
+      </div>
+
+      <!-- 설문 문항 컨테이너 -->
+      <div id="questions-container"></div>
+
+      <!-- 제출 버튼 -->
+      <div style="margin-top:32px;display:flex;gap:12px;justify-content:center">
+        <button class="btn btn-primary btn-lg" onclick="submitSurvey()" style="min-width:200px">
+          ✅ 설문 제출하기
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 완료 화면 ===== -->
+  <section id="completed-section" class="hidden">
+    <div class="container-sm">
+      <div class="card" style="margin-top:40px">
+        <div class="card-body">
+          <div class="success-screen">
+            <span class="success-icon">🎉</span>
+            <h2><span id="completed-name"></span> 학생, 설문이 완료되었습니다!</h2>
+            <p>설문에 참여해 주셔서 감사합니다.<br>선생님께서 모둠을 구성하신 후 결과를 안내해 드릴 예정입니다.</p>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+              <a href="survey.html" class="btn btn-outline">다른 학생 설문하기</a>
+              <a href="index.html" class="btn btn-ghost">홈으로 돌아가기</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="toast-container"></div>
+
+  <script src="js/app.js"></script>
+  <script src="js/survey.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', initSurveyPage);
+  </script>
+</body>
+</html>

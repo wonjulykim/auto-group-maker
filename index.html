@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>자동 모둠 구성 시스템</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <h1>📚 자동 모둠 구성 시스템</h1>
+        <span class="header-badge">1학년 영어 수업</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <span class="hero-icon">🎓</span>
+      <h1>협동학습 모둠 구성 시스템</h1>
+      <p>학생 설문을 통해 성향, 영어 역량, 협동학습 참여 정도를 분석하여<br>
+         균형 잡힌 모둠을 자동으로 구성합니다.</p>
+
+      <div class="entry-cards">
+        <a href="survey.html" class="entry-card">
+          <span class="entry-icon">✏️</span>
+          <h2>학생 설문 참여</h2>
+          <p>학년·반·번호·이름을 입력하고<br>30개 문항 설문에 참여하세요.</p>
+        </a>
+        <a href="teacher.html" class="entry-card teacher-card">
+          <span class="entry-icon">👩‍🏫</span>
+          <h2>교사 대시보드</h2>
+          <p>학생 설문 결과를 확인하고<br>자동으로 모둠을 구성하세요.</p>
+        </a>
+      </div>
+    </div>
+
+    <div class="container" style="padding-bottom:48px">
+      <div class="card" style="max-width:640px;margin:0 auto">
+        <div class="card-header">
+          <h2>📋 프로그램 안내</h2>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;gap:14px">
+            <div class="alert alert-info">
+              <span>📌</span>
+              <div>
+                <strong>설문 구성</strong><br>
+                성향 10문항 · 영어에 대한 관점 10문항 · 협동학습 참여 10문항으로 구성됩니다.
+                각 문항은 1(전혀 그렇지 않다) ~ 5(매우 그렇다) 척도로 답합니다.
+              </div>
+            </div>
+            <div class="alert alert-success">
+              <span>🏆</span>
+              <div>
+                <strong>모둠 구성 방식</strong><br>
+                반별 20명 기준, 5인 4모둠으로 구성됩니다.
+                영어 실력 균형 배분 · 남녀 혼합 · 협동학습 역할 분배를 고려합니다.
+              </div>
+            </div>
+            <div class="alert alert-warning">
+              <span>💾</span>
+              <div>
+                <strong>데이터 보관</strong><br>
+                모든 데이터는 이 컴퓨터의 브라우저에 저장됩니다.
+                데이터 백업은 교사 대시보드에서 JSON 파일로 내보낼 수 있습니다.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast-container"></div>
+  <script src="js/app.js"></script>
+</body>
+</html>

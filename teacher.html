@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>교사 대시보드 - 자동 모둠 구성</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== 로그인 화면 ===== -->
+  <div id="login-screen">
+    <div class="login-wrap">
+      <div class="login-card">
+        <span class="login-icon">👩‍🏫</span>
+        <h1>교사 대시보드</h1>
+        <p>교사용 비밀번호를 입력하세요.<br><small style="color:#94a3b8">기본 비밀번호: teacher1234</small></p>
+        <form id="login-form">
+          <div class="form-group" style="text-align:left">
+            <label class="form-label">비밀번호</label>
+            <input type="password" id="teacher-pw" class="form-control" placeholder="비밀번호 입력" autofocus>
+            <p id="login-error" style="color:#ef4444;font-size:.8rem;margin-top:6px"></p>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg">로그인</button>
+        </form>
+        <div style="margin-top:16px">
+          <a href="index.html" class="btn btn-ghost btn-sm">← 홈으로</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 대시보드 ===== -->
+  <div id="dashboard" class="hidden">
+    <header class="header no-print">
+      <div class="container-lg">
+        <div class="header-inner">
+          <h1>👩‍🏫 교사 대시보드</h1>
+          <div style="display:flex;gap:8px;align-items:center">
+            <a href="survey.html" class="btn btn-ghost btn-sm" style="color:white;border-color:rgba(255,255,255,.3)">✏️ 학생 설문 링크</a>
+            <a href="index.html" class="btn btn-ghost btn-sm" style="color:white;border-color:rgba(255,255,255,.3)">← 홈</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="container-lg" style="padding-top:28px;padding-bottom:60px">
+
+      <!-- 통계 카드 -->
+      <div class="stats-grid no-print">
+        <div class="stat-card">
+          <span class="stat-icon">👥</span>
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">전체 설문 완료</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">1️⃣</span>
+          <div class="stat-value" id="stat-c1">0</div>
+          <div class="stat-label">1반 참여</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">2️⃣</span>
+          <div class="stat-value" id="stat-c2">0</div>
+          <div class="stat-label">2반 참여</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">🏆</span>
+          <div class="stat-value" id="stat-grouped">0/2</div>
+          <div class="stat-label">모둠 구성 완료</div>
+        </div>
+      </div>
+
+      <!-- 반 선택 -->
+      <div class="class-tabs no-print">
+        <button class="class-tab active" data-class="1">1학년 1반</button>
+        <button class="class-tab" data-class="2">1학년 2반</button>
+      </div>
+
+      <!-- 탭 네비게이션 -->
+      <div class="tabs no-print">
+        <button class="tab-btn active" data-tab="tab-students">
+          📋 학생 목록
+        </button>
+        <button class="tab-btn" data-tab="tab-groups">
+          🏆 모둠 구성
+        </button>
+        <button class="tab-btn" data-tab="tab-data">
+          💾 데이터 관리
+        </button>
+      </div>
+
+      <!-- ===== 탭 1: 학생 목록 ===== -->
+      <div id="tab-students" class="tab-pane active">
+        <div class="card">
+          <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+            <h2>📋 설문 참여 학생 목록</h2>
+            <a href="survey.html" class="btn btn-primary btn-sm">+ 설문 페이지 열기</a>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div id="student-empty" class="empty-state hidden">
+              <span class="empty-icon">📭</span>
+              <p>아직 설문에 참여한 학생이 없습니다.<br>
+                 <a href="survey.html" style="color:#4f46e5">설문 페이지 링크</a>를 학생들과 공유하세요.</p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>번호</th>
+                    <th>이름</th>
+                    <th>성별</th>
+                    <th style="min-width:120px">영어 점수</th>
+                    <th style="min-width:120px">성향 점수</th>
+                    <th style="min-width:120px">협동 점수</th>
+                    <th>역할 유형</th>
+                    <th>제출일시</th>
+                    <th>관리</th>
+                  </tr>
+                </thead>
+                <tbody id="student-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 점수 안내 -->
+        <div class="card" style="margin-top:16px">
+          <div class="card-body">
+            <div style="display:flex;gap:24px;flex-wrap:wrap;font-size:.8rem;color:#64748b">
+              <div><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:linear-gradient(90deg,#3b82f6,#60a5fa);margin-right:6px;vertical-align:middle"></span>영어 점수: 영어에 대한 관점 10문항 합계 (10~50점)</div>
+              <div><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:linear-gradient(90deg,#8b5cf6,#a78bfa);margin-right:6px;vertical-align:middle"></span>성향 점수: 성향 설문 10문항 합계 (10~50점)</div>
+              <div><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:linear-gradient(90deg,#10b981,#34d399);margin-right:6px;vertical-align:middle"></span>협동 점수: 협동학습 참여 10문항 합계 (10~50점)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 탭 2: 모둠 구성 ===== -->
+      <div id="tab-groups" class="tab-pane">
+        <!-- 구성 컨트롤 -->
+        <div class="card no-print" style="margin-bottom:20px">
+          <div class="card-body">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+              <div>
+                <h3 style="font-size:1rem;font-weight:700;margin-bottom:4px">모둠 자동 구성</h3>
+                <p style="font-size:.85rem;color:#64748b" id="group-student-count">
+                  설문 완료 학생 정보를 바탕으로 균형 잡힌 4개 모둠을 구성합니다.
+                </p>
+              </div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button id="btn-generate" class="btn btn-primary" onclick="generateGroups()">
+                  🔀 모둠 자동 구성
+                </button>
+                <button class="btn btn-ghost" onclick="resetGroups()">🗑️ 초기화</button>
+                <button class="btn btn-ghost" onclick="printGroups()">🖨️ 인쇄</button>
+              </div>
+            </div>
+
+            <div class="alert alert-info" style="margin-top:16px;margin-bottom:0">
+              <span>💡</span>
+              <div>
+                <strong>모둠 구성 원칙</strong><br>
+                ① 영어 실력 고르게 배분 (스네이크 드래프트 방식) &nbsp;
+                ② 남녀 균형 최적화 &nbsp;
+                ③ 성향 분석 기반 역할 자동 배정 (리더·발표자·기록자·도우미·점검자)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 역할 안내 -->
+        <div class="card no-print" style="margin-bottom:20px">
+          <div class="card-body">
+            <h3 style="font-size:.9rem;font-weight:700;margin-bottom:12px">📌 모둠 역할 안내</h3>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <span class="member-role role-leader" style="padding:5px 12px">🌟 리더 — 모둠 이끌기, 의사결정</span>
+              <span class="member-role role-presenter" style="padding:5px 12px">🎤 발표자 — 영어 발표, 의견 표현</span>
+              <span class="member-role role-recorder" style="padding:5px 12px">📝 기록자 — 활동 내용 기록, 정리</span>
+              <span class="member-role role-supporter" style="padding:5px 12px">🤝 도우미 — 모둠원 지원, 격려</span>
+              <span class="member-role role-checker" style="padding:5px 12px">✅ 점검자 — 결과 확인, 피드백</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 빈 상태 -->
+        <div id="groups-empty">
+          <div class="empty-state" style="border:2px dashed #e2e8f0;border-radius:12px;background:white">
+            <span class="empty-icon">🏆</span>
+            <p>아직 모둠이 구성되지 않았습니다.<br>위의 <strong>모둠 자동 구성</strong> 버튼을 클릭하세요.</p>
+          </div>
+        </div>
+
+        <!-- 모둠 결과 -->
+        <div id="groups-result" class="hidden">
+          <!-- 인쇄 헤더 (화면에서는 숨김) -->
+          <div style="display:none" class="print-only">
+            <h2 style="text-align:center;margin-bottom:8px">1학년 영어 수업 모둠 구성표</h2>
+            <p style="text-align:center;color:#64748b;margin-bottom:20px">
+              출력일: <span id="print-date"></span>
+            </p>
+          </div>
+          <div class="groups-grid" id="groups-grid"></div>
+
+          <!-- 점수 비교 -->
+          <div class="card no-print" style="margin-top:20px">
+            <div class="card-header">
+              <h2>📊 모둠별 점수 비교</h2>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table id="group-compare-table">
+                  <thead>
+                    <tr>
+                      <th>모둠</th>
+                      <th>구성원</th>
+                      <th>남/여</th>
+                      <th>영어 평균</th>
+                      <th>협동 평균</th>
+                      <th>성향 평균</th>
+                      <th>합산 평균</th>
+                    </tr>
+                  </thead>
+                  <tbody id="group-compare-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 탭 3: 데이터 관리 ===== -->
+      <div id="tab-data" class="tab-pane">
+        <div style="display:grid;gap:20px;max-width:640px">
+
+          <div class="card">
+            <div class="card-header"><h2>📤 데이터 내보내기</h2></div>
+            <div class="card-body">
+              <p style="font-size:.875rem;color:#64748b;margin-bottom:16px">
+                전체 학생 데이터와 모둠 구성 결과를 JSON 파일로 저장합니다.
+                다른 컴퓨터에서 불러올 수 있습니다.
+              </p>
+              <button class="btn btn-primary" onclick="exportData()">💾 JSON으로 내보내기</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><h2>📥 데이터 가져오기</h2></div>
+            <div class="card-body">
+              <p style="font-size:.875rem;color:#64748b;margin-bottom:16px">
+                이전에 내보낸 JSON 파일을 불러옵니다.
+                <strong style="color:#ef4444">기존 데이터가 덮어씌워집니다.</strong>
+              </p>
+              <label class="btn btn-outline" style="cursor:pointer">
+                📂 파일 선택
+                <input type="file" accept=".json" style="display:none" onchange="importData(this.files[0])">
+              </label>
+            </div>
+          </div>
+
+          <div class="card" style="border-color:#fca5a5">
+            <div class="card-header" style="background:#fff5f5">
+              <h2 style="color:#dc2626">⚠️ 데이터 삭제</h2>
+            </div>
+            <div class="card-body">
+              <p style="font-size:.875rem;color:#64748b;margin-bottom:16px">
+                전체 학생 데이터와 모둠 구성 결과를 영구 삭제합니다.
+                <strong style="color:#ef4444">이 작업은 되돌릴 수 없습니다.</strong>
+              </p>
+              <button class="btn btn-danger" onclick="clearAllData()">🗑️ 전체 데이터 삭제</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><h2>ℹ️ 저장 공간 정보</h2></div>
+            <div class="card-body" id="storage-info">
+              <div id="storage-display" style="font-size:.875rem;color:#64748b"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="js/app.js"></script>
+  <script src="js/teacher.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      initTeacherLogin();
+
+      // 탭 3: 저장 공간 정보
+      function updateStorageInfo() {
+        const db = loadDB();
+        const size = new Blob([JSON.stringify(db)]).size;
+        const kb = (size / 1024).toFixed(1);
+        const el = document.getElementById('storage-display');
+        if (el) {
+          el.innerHTML = `
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div>총 학생 수: <strong>${db.students.length}명</strong></div>
+              <div>데이터 크기: <strong>${kb} KB</strong></div>
+              <div>1반 학생: <strong>${db.students.filter(s=>s.classNum=='1').length}명</strong></div>
+              <div>2반 학생: <strong>${db.students.filter(s=>s.classNum=='2').length}명</strong></div>
+            </div>`;
+        }
+      }
+
+      // 모둠 구성 후 비교 테이블 업데이트
+      const origGenerateGroups = generateGroups;
+      window._afterGenerate = function(groups) {
+        renderGroupCompareTable(groups);
+        document.getElementById('print-date').textContent = new Date().toLocaleDateString('ko-KR');
+      };
+
+      // 탭 변경 시 저장 정보 업데이트
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (btn.dataset.tab === 'tab-data') updateStorageInfo();
+        });
+      });
+    });
+
+    // 모둠 비교 테이블
+    function renderGroupCompareTable(groups) {
+      if (!groups) {
+        const saved = getGroups(currentView.grade, currentView.classNum);
+        if (saved) groups = saved;
+        else return;
+      }
+      const tbody = document.getElementById('group-compare-body');
+      if (!tbody) return;
+      const icons = ['⭐', '🚀', '🌿', '🔥'];
+      tbody.innerHTML = groups.map((g, i) => {
+        const mCount = g.members.filter(m => m.gender === 'M').length;
+        const fCount = g.members.filter(m => m.gender === 'F').length;
+        const avgTotal = ((g.avgEnglish + g.avgCooperative + g.avgPersonality) / 3).toFixed(1);
+        return `<tr>
+          <td style="font-weight:700">${icons[i]} ${i+1}모둠</td>
+          <td>${g.members.map(m => m.name).join(', ')}</td>
+          <td>♂${mCount} / ♀${fCount}</td>
+          <td style="font-weight:700;color:#2563eb">${g.avgEnglish.toFixed(1)}</td>
+          <td style="font-weight:700;color:#059669">${g.avgCooperative.toFixed(1)}</td>
+          <td style="font-weight:700;color:#7c3aed">${g.avgPersonality.toFixed(1)}</td>
+          <td style="font-weight:700">${avgTotal}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    // generateGroups 후 테이블도 업데이트하도록 래핑
+    const _origGenerate = generateGroups;
+    window.generateGroups = function() {
+      _origGenerate();
+      setTimeout(() => {
+        const groups = getGroups(currentView.grade, currentView.classNum);
+        if (groups) {
+          renderGroupCompareTable(groups);
+          document.getElementById('print-date').textContent = new Date().toLocaleDateString('ko-KR');
+        }
+      }, 100);
+    };
+
+    // 탭 렌더 시 비교 테이블도 같이
+    const _origRenderGroupsTab = renderGroupsTab;
+    window.renderGroupsTab = function() {
+      _origRenderGroupsTab();
+      setTimeout(() => {
+        const groups = getGroups(currentView.grade, currentView.classNum);
+        if (groups) renderGroupCompareTable(groups);
+      }, 50);
+    };
+  </script>
+
+  <style>
+    @media print {
+      .groups-grid { grid-template-columns: 1fr 1fr !important; }
+    }
+  </style>
+</body>
+</html>
